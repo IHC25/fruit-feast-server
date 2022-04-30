@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+require("dotenv").config();
 
 const app = express();
 
@@ -12,8 +13,7 @@ app.use(express.json());
 
 //username: fruitFestUser, pass: MraSE6IWTrPRRgl2
 
-const uri =
-  "mongodb+srv://fruitFestUser:MraSE6IWTrPRRgl2@cluster0.d5cdx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.d5cdx.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
