@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const app = express();
 
@@ -24,12 +24,19 @@ async function run() {
     await client.connect();
     const inventoryCollection = client.db("fruitFest").collection("products");
 
-    //reading created collections of inventory
+    //read created collections of inventory
     app.get("/inventory", async (req, res) => {
       const query = {};
       const cursor = inventoryCollection.find(query);
       const products = await cursor.toArray();
       res.send(products);
+    });
+    //read only selected product
+    app.get("/inventory/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const product = await inventoryCollection.findOne(query);
+      res.send(product);
     });
   } finally {
   }
