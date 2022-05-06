@@ -23,8 +23,11 @@ async function run() {
   try {
     await client.connect();
     const inventoryCollection = client.db("fruitFest").collection("products");
+    const myProductsCollection = client
+      .db("fruitFest")
+      .collection("my-products");
 
-    //read created collections of inventory
+    //Inventory Collection API
     app.get("/inventory", async (req, res) => {
       const query = {};
       const cursor = inventoryCollection.find(query);
@@ -60,7 +63,6 @@ async function run() {
     // delete a product
     app.delete("/inventory/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const query = { _id: ObjectId(id) };
       const result = await inventoryCollection.deleteOne(query);
       res.send(result);
@@ -69,6 +71,28 @@ async function run() {
     app.post("/inventory", async (req, res) => {
       const newProduct = req.body;
       const result = await inventoryCollection.insertOne(newProduct);
+      res.send(result);
+    });
+
+    //myProducts API
+    app.get("/my-products", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const cursor = myProductsCollection.find(query);
+      const myProducts = await cursor.toArray();
+      res.send(myProducts);
+    });
+    // add a product in myProductsCollection
+    app.post("/my-products", async (req, res) => {
+      const myProduct = req.body;
+      const myProducts = await myProductsCollection.insertOne(myProduct);
+      res.send(myProducts);
+    });
+    // delete a product from myProductsCollection
+    app.delete("/my-products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await myProductsCollection.deleteOne(query);
       res.send(result);
     });
   } finally {
